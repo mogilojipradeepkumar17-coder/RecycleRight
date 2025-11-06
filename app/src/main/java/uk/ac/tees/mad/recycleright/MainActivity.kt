@@ -21,10 +21,12 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             RecycleRightTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    val navController = rememberNavController()
-                    SplashScreen(navController)
-                }
+//                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+//                    val navController = rememberNavController()
+//                    SplashScreen(navController)
+//                }
+
+//                App
             }
         }
     }
