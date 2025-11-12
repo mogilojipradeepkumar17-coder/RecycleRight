@@ -1,4 +1,4 @@
-package uk.ac.tees.mad.recycleright.presentation
+package uk.ac.tees.mad.recycleright.presentation.screens
 
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.animateFloatAsState
@@ -27,12 +27,18 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import uk.ac.tees.mad.recycleright.R
+import uk.ac.tees.mad.recycleright.presentation.viewmodel.AuthViewModel
 
 @Composable
-fun SplashScreen(navController: NavController) {
+fun SplashScreen(
+    navController: NavController,
+    authViewModel: AuthViewModel
+) {
     //val auth = FirebaseAuth.getInstance()
     //val isLoggedIn = auth.currentUser != null
 
+
+    val isLoggedIn=authViewModel.isLoggedIn()
     val scale = animateFloatAsState(
         targetValue = 1f,
         animationSpec = tween(
@@ -48,15 +54,15 @@ fun SplashScreen(navController: NavController) {
 
     LaunchedEffect(true) {
         delay(2000) 
-//        if (isLoggedIn) {
-//            navController.navigate("home") {
-//                popUpTo("splash") { inclusive = true }
-//            }
-//        } else {
-//            navController.navigate("login") {
-//                popUpTo("splash") { inclusive = true }
-//            }
-//        }
+        if (isLoggedIn) {
+            navController.navigate(Screen.MainScreen.route) {
+                popUpTo(0) { inclusive = true }
+            }
+        } else {
+            navController.navigate(Screen.LoginScreen.route) {
+                popUpTo(0) { inclusive = true }
+            }
+        }
     }
 
     Box(
