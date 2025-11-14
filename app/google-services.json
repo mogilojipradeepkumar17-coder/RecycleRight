@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "877222746573",
+    "project_id": "recycleright-74f5f",
+    "storage_bucket": "recycleright-74f5f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:877222746573:android:c2f0e0fcdb0862d1bf0c84",
+        "android_client_info": {
+          "package_name": "uk.ac.tees.mad.recycleright"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGBBFyFU4MfoSIevFuxu6Kk8Gu3i2-KvA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
