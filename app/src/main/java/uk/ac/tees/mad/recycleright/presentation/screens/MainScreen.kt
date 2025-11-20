@@ -1,11 +1,9 @@
 package uk.ac.tees.mad.recycleright.presentation.screens
 
+import android.net.http.SslCertificate.restoreState
+import android.net.http.SslCertificate.saveState
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -13,6 +11,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import uk.ac.tees.mad.recycleright.presentation.components.HomeTopBar
+import uk.ac.tees.mad.recycleright.presentation.components.ReminderTopBar
 import uk.ac.tees.mad.recycleright.presentation.navigation.bottom_navigation.BottomNavScreen
 import uk.ac.tees.mad.recycleright.presentation.navigation.bottom_navigation.bottomNavScreens
 import uk.ac.tees.mad.recycleright.presentation.screens.bottom_screen.HomeScreen
@@ -22,7 +22,7 @@ import uk.ac.tees.mad.recycleright.presentation.screens.bottom_screen.ReminderSc
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    logout:()->Unit,
+    logout: () -> Unit,
 ) {
 
     val bottomNavController = rememberNavController()
@@ -33,6 +33,28 @@ fun MainScreen(
     val context = LocalContext.current
 
     Scaffold(
+
+        topBar = {
+            when (currentRoute) {
+                BottomNavScreen.Home.route -> {
+                    HomeTopBar(
+                        navigateToProfileScreen = {
+                            bottomNavController.navigate(BottomNavScreen.Profile.route) {
+                                popUpTo(bottomNavController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                    )
+                }
+
+                BottomNavScreen.Reminder.route -> {
+                    ReminderTopBar()
+                }
+            }
+        },
         bottomBar = {
             NavigationBar {
                 bottomNavScreens.forEach { screen ->
@@ -57,27 +79,27 @@ fun MainScreen(
                 }
             }
         }
-    ){innerPadding->
+    ) { innerPadding ->
         NavHost(
             navController = bottomNavController,
             startDestination = BottomNavScreen.Home.route,
             modifier = Modifier.padding(innerPadding)
-        ){
+        ) {
             composable(
-                route= BottomNavScreen.Home.route
+                route = BottomNavScreen.Home.route
             ) {
                 HomeScreen()
             }
 
 
             composable(
-                route= BottomNavScreen.Reminder.route
+                route = BottomNavScreen.Reminder.route
             ) {
                 ReminderScreen()
             }
 
             composable(
-                route= BottomNavScreen.Profile.route
+                route = BottomNavScreen.Profile.route
             ) {
                 ProfileScreen()
             }
