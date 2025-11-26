@@ -3,6 +3,8 @@ package uk.ac.tees.mad.recycleright.data.model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+
+// to store in the room
 @Entity(tableName = "recyclable_items")
 data class RecyclableItem(
     @PrimaryKey

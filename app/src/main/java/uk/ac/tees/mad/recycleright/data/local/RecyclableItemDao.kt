@@ -7,7 +7,7 @@ import uk.ac.tees.mad.recycleright.data.model.RecyclableItem
 @Dao
 interface RecyclableItemDao {
 
-    @Query("SELECT * FROM recyclable_items WHERE name LIKE '%' || :query || '%' ORDER BY name ASC")
+    @Query("SELECT * FROM recyclable_items WHERE name LIKE '%' || :query || '%' ORDER BY lastUpdated Desc")
     fun searchItems(query: String): Flow<List<RecyclableItem>>
 
     @Query("SELECT * FROM recyclable_items WHERE barcode = :barcode LIMIT 1")
@@ -37,7 +37,7 @@ interface RecyclableItemDao {
     @Query("SELECT COUNT(*) FROM recyclable_items")
     suspend fun getItemCount(): Int
 
-    @Query("SELECT * FROM recyclable_items ORDER BY name ASC")
+    @Query("SELECT * FROM recyclable_items ORDER BY lastUpdated desc")
     fun getAllItems(): Flow<List<RecyclableItem>>
 
 }
