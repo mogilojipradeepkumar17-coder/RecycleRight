@@ -1,21 +1,22 @@
 package uk.ac.tees.mad.recycleright.presentation.screens
 
-import android.net.http.SslCertificate.restoreState
-import android.net.http.SslCertificate.saveState
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import uk.ac.tees.mad.recycleright.presentation.components.HomeTopBar
 import uk.ac.tees.mad.recycleright.presentation.components.ReminderTopBar
 import uk.ac.tees.mad.recycleright.presentation.navigation.bottom_navigation.BottomNavScreen
 import uk.ac.tees.mad.recycleright.presentation.navigation.bottom_navigation.bottomNavScreens
 import uk.ac.tees.mad.recycleright.presentation.screens.bottom_screen.HomeScreen
+import uk.ac.tees.mad.recycleright.presentation.screens.bottom_screen.ItemDetailsScreen
 import uk.ac.tees.mad.recycleright.presentation.screens.bottom_screen.ProfileScreen
 import uk.ac.tees.mad.recycleright.presentation.screens.bottom_screen.ReminderScreen
 
@@ -88,7 +89,11 @@ fun MainScreen(
             composable(
                 route = BottomNavScreen.Home.route
             ) {
-                HomeScreen()
+                HomeScreen(
+                    onItemClick = { itemId ->
+                        bottomNavController.navigate("item_details/$itemId")
+                    }
+                )
             }
 
 
@@ -102,6 +107,24 @@ fun MainScreen(
                 route = BottomNavScreen.Profile.route
             ) {
                 ProfileScreen()
+            }
+
+            composable(
+                route = "item_details/{itemId}",
+                arguments = listOf(
+                    navArgument("itemId") {
+                        type = NavType.StringType
+                    }
+                )
+            ) { backStackEntry ->
+                val itemId = backStackEntry.arguments?.getString("itemId") ?: ""
+                ItemDetailsScreen(
+                    itemId = itemId,
+                    onBackClick = {
+                        bottomNavController.popBackStack()
+                    }
+                )
+
             }
         }
     }
