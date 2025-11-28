@@ -35,7 +35,8 @@ import java.io.File
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
+    onItemClick: (String) -> Unit,
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
@@ -57,6 +58,9 @@ fun HomeScreen(
         ActivityResultContracts.TakePicture()
     ) { success ->
         if (success && imageUri != null) {
+            // START: Show processing state immediately
+            viewModel.startImageProcessing()
+
             processBarcodeFromImage(
                 context = context,
                 uri = imageUri!!,
@@ -64,6 +68,8 @@ fun HomeScreen(
                     viewModel.searchByBarcode(barcode)
                 },
                 onNoBarcodeFound = {
+                    // Clear scanning state before showing error
+                    viewModel.clearScanningState()
                     Toast.makeText(
                         context,
                         "No barcode detected. Please try again.",
@@ -71,6 +77,8 @@ fun HomeScreen(
                     ).show()
                 },
                 onError = { error ->
+                    // Clear scanning state before showing error
+                    viewModel.clearScanningState()
                     Toast.makeText(
                         context,
                         "Failed to process image: $error",
@@ -78,6 +86,9 @@ fun HomeScreen(
                     ).show()
                 }
             )
+        } else {
+            // Photo was cancelled or failed
+            viewModel.clearScanningState()
         }
     }
 
@@ -95,6 +106,7 @@ fun HomeScreen(
             cameraLauncher.launch(uri)
         } else {
             showPermissionDialog = true
+            viewModel.clearScanningState()
         }
     }
 
@@ -138,11 +150,11 @@ fun HomeScreen(
                 onClearSearch = { viewModel.clearSearch() },
                 onScanClick = {
                     // Prevent multiple concurrent scans
-                    if (scanningState !is ScanningState.Scanning) {
+                    if (scanningState is ScanningState.Idle) {
                         cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
                     }
                 },
-                isScanning = scanningState is ScanningState.Scanning
+                isScanning = scanningState !is ScanningState.Idle
             )
 
             // Results Section
@@ -154,7 +166,8 @@ fun HomeScreen(
                     ItemsList(
                         items = state.items,
                         searchQuery = searchQuery,
-                        onFavoriteClick = { viewModel.toggleFavorite(it) }
+                        onFavoriteClick = { viewModel.toggleFavorite(it) },
+                        onItemClick = onItemClick,
                     )
                 }
                 is HomeUiState.Error -> {
@@ -163,9 +176,15 @@ fun HomeScreen(
             }
         }
 
-        // Scanning Dialog (only show during actual scanning)
-        if (scanningState is ScanningState.Scanning) {
-            ScanningDialog()
+        // Scanning Dialog - Show for all scanning states
+        when (scanningState) {
+            is ScanningState.ProcessingImage -> {
+                ScanningDialog(message = "Detecting barcode...")
+            }
+            is ScanningState.FetchingProduct -> {
+                ScanningDialog(message = "Looking up product information...")
+            }
+            else -> {}
         }
     }
 
@@ -297,7 +316,8 @@ fun SearchAndScanCard(
 fun ItemsList(
     items: List<RecyclableItem>,
     searchQuery: String,
-    onFavoriteClick: (RecyclableItem) -> Unit
+    onFavoriteClick: (RecyclableItem) -> Unit,
+    onItemClick: (String) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -315,7 +335,8 @@ fun ItemsList(
         items(items, key = { it.id }) { item ->
             RecyclableItemCard(
                 item = item,
-                onFavoriteClick = { onFavoriteClick(item) }
+                onFavoriteClick = { onFavoriteClick(item) },
+                onClick = { onItemClick(item.id) }
             )
             Spacer(modifier = Modifier.height(12.dp))
         }
@@ -396,10 +417,12 @@ fun CategoryChip(
 @Composable
 fun RecyclableItemCard(
     item: RecyclableItem,
-    onFavoriteClick: () -> Unit
+    onFavoriteClick: () -> Unit,
+    onClick: () -> Unit,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(2.dp)
@@ -470,7 +493,7 @@ fun RecyclableItemCard(
 }
 
 @Composable
-fun LoadingView() {
+private fun LoadingView() {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -506,14 +529,17 @@ fun ErrorView(message: String) {
 }
 
 @Composable
-fun ScanningDialog() {
+fun ScanningDialog(message: String = "Processing...") {
     AlertDialog(
         onDismissRequest = { /* Prevent dismissal during scan */ },
         icon = {
-            CircularProgressIndicator(color = Color(0xFF4CAF50))
+            CircularProgressIndicator(
+                color = Color(0xFF4CAF50),
+                modifier = Modifier.size(40.dp)
+            )
         },
-        title = { Text("Scanning Barcode...") },
-        text = { Text("Looking up product information") },
+        title = { Text("Scanning") },
+        text = { Text(message) },
         confirmButton = { /* No button during scanning */ }
     )
 }
