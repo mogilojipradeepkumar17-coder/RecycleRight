@@ -16,6 +16,10 @@ interface RecyclableItemDao {
     @Query("SELECT * FROM recyclable_items WHERE id = :itemId")
     suspend fun getItemById(itemId: String): RecyclableItem?
 
+    // NEW: Add Flow observer for single item
+    @Query("SELECT * FROM recyclable_items WHERE id = :itemId")
+    fun observeItemById(itemId: String): Flow<RecyclableItem?>
+
     @Query("SELECT * FROM recyclable_items WHERE isFavorite = 1 ORDER BY name ASC")
     fun getFavoriteItems(): Flow<List<RecyclableItem>>
 
@@ -39,5 +43,4 @@ interface RecyclableItemDao {
 
     @Query("SELECT * FROM recyclable_items ORDER BY lastUpdated desc")
     fun getAllItems(): Flow<List<RecyclableItem>>
-
 }

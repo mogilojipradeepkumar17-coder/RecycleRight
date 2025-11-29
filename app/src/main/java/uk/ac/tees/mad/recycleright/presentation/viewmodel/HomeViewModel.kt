@@ -30,13 +30,8 @@ class HomeViewModel @Inject constructor(
     val scanningState: StateFlow<ScanningState> = _scanningState.asStateFlow()
 
     init {
-        // Seed database on first launch
         seedDatabaseIfNeeded()
-
-        // Background sync from Firestore
         syncFromFirestore()
-
-        // Start observing items from Room
         observeItems()
     }
 
@@ -87,9 +82,14 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    // NEW: Call this when photo is taken, before ML Kit processes
+    fun startImageProcessing() {
+        _scanningState.value = ScanningState.ProcessingImage
+    }
+
     fun searchByBarcode(barcode: String) {
         viewModelScope.launch {
-            _scanningState.value = ScanningState.Scanning
+            _scanningState.value = ScanningState.FetchingProduct
 
             try {
                 val result = repository.getItemByBarcode(barcode)
@@ -118,7 +118,6 @@ class HomeViewModel @Inject constructor(
     fun toggleFavorite(item: RecyclableItem) {
         viewModelScope.launch {
             repository.toggleFavorite(item)
-            // Room Flow will automatically update the UI
         }
     }
 
@@ -127,7 +126,6 @@ class HomeViewModel @Inject constructor(
             try {
                 repository.syncItemsFromFirestore()
             } catch (e: Exception) {
-                // Silent fail - local data is fine
                 e.printStackTrace()
             }
         }
@@ -145,10 +143,11 @@ class HomeViewModel @Inject constructor(
     }
 }
 
-// Separate state for barcode scanning
+// Updated scanning states
 sealed class ScanningState {
     object Idle : ScanningState()
-    object Scanning : ScanningState()
+    object ProcessingImage : ScanningState() // NEW: Processing barcode image
+    object FetchingProduct : ScanningState() // NEW: Fetching from API/DB
     data class Success(val item: RecyclableItem) : ScanningState()
     data class Error(val message: String) : ScanningState()
 }

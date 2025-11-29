@@ -123,8 +123,28 @@ class RecyclableItemRepository @Inject constructor(
             }
 
             if (items.isNotEmpty()) {
-                // Use insertOrReplace strategy to avoid duplicates
-                dao.insertItems(items)
+                // IMPORTANT: Only insert items that don't exist locally
+                // This prevents overwriting local favorites
+                items.forEach { firestoreItem ->
+                    val localItem = dao.getItemById(firestoreItem.id)
+                    if (localItem == null) {
+                        // Item doesn't exist locally, insert it
+                        dao.insertItem(firestoreItem)
+                    } else {
+                        // Item exists - preserve local favorite status
+                        // Only update if data is newer or different (excluding favorite)
+                        if (firestoreItem.barcode != null && localItem.barcode == null) {
+                            dao.updateItem(localItem.copy(
+                                name = firestoreItem.name,
+                                description = firestoreItem.description,
+                                tips = firestoreItem.tips,
+                                barcode = firestoreItem.barcode,
+                                imageUrl = firestoreItem.imageUrl
+                                // Keep local isFavorite value!
+                            ))
+                        }
+                    }
+                }
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -143,7 +163,7 @@ class RecyclableItemRepository @Inject constructor(
             try {
                 firestore.collection("recyclable_items")
                     .document(item.id)
-                    .update("isFavorite", updated.isFavorite)
+                    .set(updated) // Use set() instead of update() to ensure full object is saved
                     .await()
             } catch (e: Exception) {
                 // If Firestore fails, Room still has correct state
@@ -154,6 +174,11 @@ class RecyclableItemRepository @Inject constructor(
 
     suspend fun getItemById(itemId: String): RecyclableItem? {
         return dao.getItemById(itemId)
+    }
+
+    // NEW: Observe item changes from Room
+    fun observeItemById(itemId: String): Flow<RecyclableItem?> {
+        return dao.observeItemById(itemId)
     }
 
     fun getFavoriteItems(): Flow<List<RecyclableItem>> {
