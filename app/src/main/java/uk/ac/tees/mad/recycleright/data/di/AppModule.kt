@@ -1,4 +1,4 @@
-package uk.ac.tees.mad.recycleright.di
+package uk.ac.tees.mad.recycleright.data.di
 
 import android.content.Context
 import androidx.room.Room
@@ -17,6 +17,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import uk.ac.tees.mad.recycleright.data.local.RecyclableItemDao
 import uk.ac.tees.mad.recycleright.data.local.RecycleRightDatabase
+import uk.ac.tees.mad.recycleright.data.local.ReminderDao
 import uk.ac.tees.mad.recycleright.data.remote.OpenFoodFactsApiService
 import uk.ac.tees.mad.recycleright.data.repository.RecyclableItemRepository
 import java.util.concurrent.TimeUnit
@@ -100,12 +101,29 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideApplicationContext(
+        @ApplicationContext context: Context
+    ): Context = context
+
+    @Provides
+    @Singleton
     fun provideRecyclableItemRepository(
         dao: RecyclableItemDao,
         firestore: FirebaseFirestore,
+        auth: FirebaseAuth,
         openFoodFactsApi: OpenFoodFactsApiService,
         @ApplicationContext context: Context
     ): RecyclableItemRepository {
-        return RecyclableItemRepository(dao, firestore, openFoodFactsApi, context)
+        return RecyclableItemRepository(dao, firestore, auth, openFoodFactsApi, context)
+    }
+
+
+    // ← ADD THIS METHOD!
+    @Provides
+    @Singleton
+    fun provideReminderDao(
+        database: RecycleRightDatabase
+    ): ReminderDao {
+        return database.reminderDao()
     }
 }

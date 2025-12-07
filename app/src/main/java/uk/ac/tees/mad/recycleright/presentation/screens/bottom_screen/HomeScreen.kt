@@ -503,7 +503,7 @@ private fun LoadingView() {
 }
 
 @Composable
-fun ErrorView(message: String) {
+private fun ErrorView(message: String) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center

@@ -32,8 +32,19 @@ class HomeViewModel @Inject constructor(
     init {
         seedDatabaseIfNeeded()
         syncFromFirestore()
+//        loadUserFavorites()
         observeItems()
     }
+
+//    private fun loadUserFavorites() {
+//        viewModelScope.launch {
+//            try {
+//                repository.loadUserFavorites()
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
+//        }
+//    }
 
     private fun observeItems() {
         viewModelScope.launch {

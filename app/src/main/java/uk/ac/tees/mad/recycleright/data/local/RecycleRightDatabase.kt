@@ -6,15 +6,20 @@ import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import uk.ac.tees.mad.recycleright.data.model.RecyclableItem
 import uk.ac.tees.mad.recycleright.data.model.RecycleCategory
+import uk.ac.tees.mad.recycleright.data.model.Reminder
 
 @Database(
-    entities = [RecyclableItem::class],
+    entities = [
+        RecyclableItem::class,
+        Reminder::class
+    ],
     version = 1,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class RecycleRightDatabase : RoomDatabase() {
     abstract fun recyclableItemDao(): RecyclableItemDao
+    abstract fun reminderDao(): ReminderDao
 }
 
 class Converters {
