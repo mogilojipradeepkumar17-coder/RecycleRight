@@ -59,7 +59,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             MainScreen(
                 logout = {
                     authViewModel.logout {
-                        navController.navigate("login") {
+                        navController.navigate(Screen.LoginScreen.route) {
                             popUpTo(0) { inclusive = true }
                         }
                     }

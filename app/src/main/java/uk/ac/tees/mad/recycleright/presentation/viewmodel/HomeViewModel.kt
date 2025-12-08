@@ -30,8 +30,8 @@ class HomeViewModel @Inject constructor(
     val scanningState: StateFlow<ScanningState> = _scanningState.asStateFlow()
 
     init {
-        seedDatabaseIfNeeded()
         syncFromFirestore()
+        seedDatabaseIfNeeded()
 //        loadUserFavorites()
         observeItems()
     }
@@ -151,6 +151,12 @@ class HomeViewModel @Inject constructor(
     fun clearSearch() {
         _searchQuery.value = ""
         performSearch("")
+    }
+
+    fun clearAllItemsPer(){
+        viewModelScope.launch {
+            repository.clearAll()
+        }
     }
 }
 

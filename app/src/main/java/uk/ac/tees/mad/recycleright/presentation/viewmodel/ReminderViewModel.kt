@@ -102,6 +102,13 @@ class ReminderViewModel @Inject constructor(
         }
     }
 
+    fun clearAllReminders(){
+        viewModelScope.launch {
+            repository.clearAllReminders()
+        }
+    }
+
+
 }
 
 

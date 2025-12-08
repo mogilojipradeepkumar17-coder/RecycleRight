@@ -2,6 +2,7 @@ package uk.ac.tees.mad.recycleright.data.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.firebase.firestore.PropertyName
 
 
 // to store in the room
@@ -15,6 +16,7 @@ data class RecyclableItem(
     val tips: String = "",
     val barcode: String? = null,
     val imageUrl: String? = null,
+    @PropertyName("favorite")  // ← Add this
     val isFavorite: Boolean = false,
     val lastUpdated: Long = System.currentTimeMillis()
 )

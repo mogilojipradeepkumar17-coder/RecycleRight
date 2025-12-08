@@ -360,6 +360,26 @@ class RecyclableItemRepository @Inject constructor(
         android.util.Log.d("RecycleRight", "🔍 Current item count: $count")
 
         if (count == 0) {
+
+            // check the firestore first if there are no items
+
+            val userId = auth.currentUser?.uid
+            if (userId != null && isNetworkAvailable()) {
+                val snapshot = firestore.collection("users")
+                    .document(userId)
+                    .collection("items")
+                    .get()
+                    .await()
+
+                if (!snapshot.isEmpty) {
+                    // User has items in Firestore, don't seed
+                    Log.d("RecycleRight", "⏭️ Skipping seed - Firestore sync will handle")
+                    return
+                }
+            }
+
+
+
             val sampleItems = getSampleItems()
 
             // Save to Room
@@ -387,6 +407,12 @@ class RecyclableItemRepository @Inject constructor(
             }
         }
     }
+
+
+    suspend fun clearAll(){
+        dao.clearAll()
+    }
+
 
     private fun getSampleItems() = listOf(
         RecyclableItem(

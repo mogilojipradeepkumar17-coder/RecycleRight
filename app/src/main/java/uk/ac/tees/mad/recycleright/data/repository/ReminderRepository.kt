@@ -36,4 +36,8 @@ class ReminderRepository  @Inject constructor(
     }
 
 
+    suspend fun clearAllReminders(){
+        dao.clearAllReminders()
+    }
+
 }
