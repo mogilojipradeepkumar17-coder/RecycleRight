@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -58,7 +59,7 @@ fun HomeScreen(
         ActivityResultContracts.TakePicture()
     ) { success ->
         if (success && imageUri != null) {
-            // START: Show processing state immediately
+            // Show processing state immediately
             viewModel.startImageProcessing()
 
             processBarcodeFromImage(
@@ -387,7 +388,7 @@ fun ItemsHeader(
 fun CategoryChip(
     count: Int,
     color: Color,
-    icon: androidx.compose.ui.graphics.vector.ImageVector
+    icon: ImageVector
 ) {
     Surface(
         shape = RoundedCornerShape(12.dp),

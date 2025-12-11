@@ -147,7 +147,7 @@ class RecyclableItemRepository @Inject constructor(
     }
 
 
-    // FIRESTORE SYNC - Save to user's collection
+    // FIRESTORE SYNC Save to user's collection
     private suspend fun syncItemToFirestore(item: RecyclableItem) {
         try {
             val userId = auth.currentUser?.uid ?: return
@@ -357,7 +357,7 @@ class RecyclableItemRepository @Inject constructor(
 
     suspend fun seedDatabaseIfEmpty() {
         val count = dao.getItemCount()
-        android.util.Log.d("RecycleRight", "🔍 Current item count: $count")
+        Log.d("RecycleRight", "🔍 Current item count: $count")
 
         if (count == 0) {
 
@@ -384,7 +384,7 @@ class RecyclableItemRepository @Inject constructor(
 
             // Save to Room
             dao.insertItems(sampleItems)
-            android.util.Log.d("RecycleRight", "✅ Inserted ${sampleItems.size} items to Room")
+            Log.d("RecycleRight", "✅ Inserted ${sampleItems.size} items to Room")
 
             // Save to Firestore (background, non-blocking)
             if (isNetworkAvailable()) {
@@ -399,7 +399,7 @@ class RecyclableItemRepository @Inject constructor(
                                 .set(item)
                             // Not using .await() - fire and forget
                         }
-                        android.util.Log.d("RecycleRight", "☁️ Firestore upload initiated")
+                        Log.d("RecycleRight", "☁️ Firestore upload initiated")
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()

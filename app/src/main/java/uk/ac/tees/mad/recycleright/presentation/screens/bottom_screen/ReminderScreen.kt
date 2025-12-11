@@ -18,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.ac.tees.mad.recycleright.data.model.Reminder
@@ -109,6 +111,13 @@ fun ReminderScreen(
             )
         }
     }
+}
+
+
+@Preview
+@Composable
+private fun ReminderHeaderCardPreview() {
+    ReminderHeaderCard({})
 }
 
 @Composable
@@ -330,6 +339,12 @@ fun ReminderCard(
     }
 }
 
+@Preview
+@Composable
+private fun EmptyRemindersViewPreview() {
+    EmptyRemindersView({})
+}
+
 @Composable
 fun EmptyRemindersView(
     onAddClick: () -> Unit
@@ -357,9 +372,11 @@ fun EmptyRemindersView(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Set reminders for bin days and eco challenges",
+                text = "Set reminders for bin days and Eco challenges",
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray
+                color = Color.Gray,
+                modifier=Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(24.dp))
             Button(

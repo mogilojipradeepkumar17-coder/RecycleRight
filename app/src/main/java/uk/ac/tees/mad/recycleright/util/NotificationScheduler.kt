@@ -126,7 +126,7 @@ class ReminderWorker @AssistedInject constructor(
         val notificationManager = applicationContext.getSystemService(NotificationManager::class.java)
 
         val notification = NotificationCompat.Builder(applicationContext, NotificationScheduler.CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.recycle_icon)
             .setContentTitle(title)
             .setContentText(description)
             .setPriority(NotificationCompat.PRIORITY_HIGH)

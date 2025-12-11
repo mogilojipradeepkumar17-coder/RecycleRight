@@ -5,6 +5,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,6 +20,10 @@ import uk.ac.tees.mad.recycleright.presentation.screens.bottom_screen.HomeScreen
 import uk.ac.tees.mad.recycleright.presentation.screens.bottom_screen.ItemDetailsScreen
 import uk.ac.tees.mad.recycleright.presentation.screens.bottom_screen.ProfileScreen
 import uk.ac.tees.mad.recycleright.presentation.screens.bottom_screen.ReminderScreen
+import uk.ac.tees.mad.recycleright.presentation.viewmodel.HomeViewModel
+import uk.ac.tees.mad.recycleright.presentation.viewmodel.ItemDetailsViewModel
+import uk.ac.tees.mad.recycleright.presentation.viewmodel.ProfileViewModel
+import uk.ac.tees.mad.recycleright.presentation.viewmodel.ReminderViewModel
 
 @Composable
 fun MainScreen(
@@ -32,6 +37,11 @@ fun MainScreen(
         navBackStackEntry.value?.destination?.route ?: BottomNavScreen.Home.route
 
     val context = LocalContext.current
+
+    val homeViewModel= hiltViewModel<HomeViewModel>()
+    val reminderViewModel=hiltViewModel<ReminderViewModel>()
+    val itemDetailViewModel=hiltViewModel<ItemDetailsViewModel>()
+    val profileViewModel=hiltViewModel<ProfileViewModel>()
 
     Scaffold(
 
@@ -90,6 +100,7 @@ fun MainScreen(
                 route = BottomNavScreen.Home.route
             ) {
                 HomeScreen(
+                    viewModel = homeViewModel,
                     onItemClick = { itemId ->
                         bottomNavController.navigate("item_details/$itemId")
                     }
@@ -100,13 +111,23 @@ fun MainScreen(
             composable(
                 route = BottomNavScreen.Reminder.route
             ) {
-                ReminderScreen()
+                ReminderScreen(
+                    viewModel = reminderViewModel
+                )
             }
 
             composable(
                 route = BottomNavScreen.Profile.route
             ) {
-                ProfileScreen()
+                ProfileScreen(
+                    onLogout = {
+                        // clear the the items
+                        homeViewModel.clearAllItemsPer()
+                            // clear the reminder
+                        reminderViewModel.clearAllReminders()
+                        logout()
+                    }
+                )
             }
 
             composable(

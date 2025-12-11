@@ -59,7 +59,7 @@ class AuthViewModel @Inject constructor(
                     "email" to email,
                     "city" to (city ?: ""),
                     // notification
-                    "notificationEnabled" to true,
+                    "notificationsEnabled" to true,
                     "createdAt" to System.currentTimeMillis()
                 )
 

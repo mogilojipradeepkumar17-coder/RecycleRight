@@ -7,10 +7,8 @@ import java.util.UUID
 
 object RecyclabilityMapper {
 
-    /**
-     * Converts OpenFoodFacts API response to RecyclableItem entity
-     * Uses barcode-based deterministic ID to prevent duplicates
-     */
+//      Converts OpenFoodFacts API response to RecyclableItem entity
+//      Uses barcode-based deterministic ID to prevent duplicates
     fun mapToRecyclableItem(
         response: OpenFoodFactsResponse,
         barcode: String
@@ -36,10 +34,10 @@ object RecyclabilityMapper {
         )
     }
 
-    /**
-     * Determines recycle category based on UK recycling guidelines
-     * Priority: Compostable > Recyclable > General Waste
-     */
+
+//      Determines recycle category based on UK recycling guidelines
+//      Priority: Compostable > Recyclable > General Waste
+
     private fun determineRecycleCategory(response: OpenFoodFactsResponse): RecycleCategory {
         val product = response.product ?: return RecycleCategory.GENERAL_WASTE
 
@@ -51,17 +49,17 @@ object RecyclabilityMapper {
             return determineFromEcoScore(response)
         }
 
-        // Priority 1: Check if compostable (food waste, organic materials)
+        // Check if compostable (food waste, organic materials)
         if (isCompostable(materials)) {
             return RecycleCategory.COMPOSTABLE
         }
 
-        // Priority 2: Check UK-accepted recyclables
+        //  Check UK-accepted recyclables
         if (isRecyclableInUK(materials)) {
             return RecycleCategory.RECYCLABLE
         }
 
-        // Priority 3: Check if explicitly non-recyclable
+        //  Check if explicitly non-recyclable
         if (isNonRecyclableInUK(materials)) {
             return RecycleCategory.GENERAL_WASTE
         }
@@ -70,10 +68,10 @@ object RecyclabilityMapper {
         return determineFromEcoScore(response)
     }
 
-    /**
-     * Extracts all material information from OpenFoodFacts response
-     * Combines ecoscore and packaging data for comprehensive analysis
-     */
+//      Extracts all material information from OpenFoodFacts response
+//     Combines ecoscore and packaging data for comprehensive analysis
+
+
     private fun getAllMaterials(response: OpenFoodFactsResponse): List<String> {
         val product = response.product ?: return emptyList()
 
@@ -91,9 +89,9 @@ object RecyclabilityMapper {
             .distinct()
     }
 
-    /**
-     * Checks if materials are compostable/biodegradable
-     */
+
+//      Checks if materials are compostable/biodegradable
+
     private fun isCompostable(materials: List<String>): Boolean {
         val compostableKeywords = listOf(
             "compostable",
@@ -109,10 +107,10 @@ object RecyclabilityMapper {
         }
     }
 
-    /**
-     * Checks if materials are recyclable according to UK guidelines
-     * Most UK councils accept: Glass, Metal, Paper, Cardboard, PET, HDPE, PP
-     */
+//     Checks if materials are recyclable according to UK guidelines
+//     Most UK councils accept: Glass, Metal, Paper, Cardboard, PET, HDPE, PP
+
+
     private fun isRecyclableInUK(materials: List<String>): Boolean {
         val ukRecyclableMaterials = listOf(
             // Glass
@@ -136,10 +134,9 @@ object RecyclabilityMapper {
         }
     }
 
-    /**
-     * Checks if materials are explicitly non-recyclable in UK
-     * Most UK councils reject: Polystyrene, PVC, LDPE, Black plastic
-     */
+//      Checks if materials are explicitly non-recyclable in UK
+//      Most UK councils reject: Polystyrene, PVC, LDPE, Black plastic
+
     private fun isNonRecyclableInUK(materials: List<String>): Boolean {
         val ukNonRecyclableMaterials = listOf(
             "polystyrene", "styrofoam", "eps",
@@ -158,9 +155,7 @@ object RecyclabilityMapper {
         }
     }
 
-    /**
-     * Determines category from eco-score when materials data unavailable
-     */
+//     Determines category from eco-score when materials data unavailable
     private fun determineFromEcoScore(response: OpenFoodFactsResponse): RecycleCategory {
         val product = response.product ?: return RecycleCategory.GENERAL_WASTE
         val packagingAdjustment = product.ecoscoreData?.adjustments?.packaging
@@ -182,9 +177,7 @@ object RecyclabilityMapper {
         }
     }
 
-    /**
-     * Generates user-friendly description based on category and available data
-     */
+//      Generates user-friendly description based on category and available data
     private fun generateDescription(
         response: OpenFoodFactsResponse,
         category: RecycleCategory
@@ -213,9 +206,9 @@ object RecyclabilityMapper {
         }
     }
 
-    /**
-     * Generates specific recycling tips based on materials present
-     */
+//     Generates specific recycling tips based on materials present
+
+
     private fun generateRecyclingTips(
         response: OpenFoodFactsResponse,
         category: RecycleCategory
@@ -258,9 +251,9 @@ object RecyclabilityMapper {
         }
     }
 
-    /**
-     * Gets human-readable materials description for display
-     */
+//      Gets human-readable materials description for display (add on)
+
+
     fun getMaterialsDescription(response: OpenFoodFactsResponse): String {
         val materials = getAllMaterials(response)
 
